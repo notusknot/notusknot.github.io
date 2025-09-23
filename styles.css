@@ -16,7 +16,6 @@ body {
   color: var(--text);
   font-family: "JetBrains Mono", liberation mono, monospace;
   line-height: calc(1em + 0.5rem);
-  position: relative;
   min-height: 100vh;
   padding: 0;
   margin: 0;
@@ -41,7 +40,7 @@ main {
   position: sticky;
   top: 0;
   width: 100%;
-  height: 7%;
+  height: 2.5rem;
   z-index: 10;
 
   display: flex;
@@ -51,33 +50,30 @@ main {
 
   background-color: var(--bg-mid);
   color: var(--text);
-
-  /* Debug border */
-  /* border: solid red; */
+  font-size: 0.9rem;
 }
 
 img {
-  width: calc(100% - 2rem);
+  max-width: calc(100% - 2rem);
+  width: 100%;
   padding: 0 1rem;
-}
-
-.navbar h1 {
-  font-size: 1.5rem;
 }
 
 .nav-list {
   display: flex;
   flex-direction: row;
   position: relative;
-  right: 30px;
   list-style: none;
 }
 
 a {
   color: var(--text);
-  font-weight: bold;
   margin: 0 12px;
   text-decoration: none;
+}
+
+a:hover {
+  color: var(--blue);
 }
 
 /* CSS for page footer */
@@ -87,9 +83,13 @@ a {
   justify-content: center;
   align-items: center;
   background-color: var(--bg-mid);
-  color: var(--text);
+  color: var(--green);
   position: absolute;
   bottom: 0;
   width: 100%;
   height: 2.5rem;
+}
+
+.page-title {
+  font-size: 1.25rem;
 }
