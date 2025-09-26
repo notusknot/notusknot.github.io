@@ -49,11 +49,11 @@ h1 {
 
 h2 {
   font-size: 1.25rem;
+  padding-bottom: none;
 }
 
 a {
   color: var(--blue);
-  margin: 0 0.5rem;
   text-decoration: none;
   font-weight: bold;
 }
@@ -68,11 +68,18 @@ img {
   border-radius: 0.5rem;
 }
 
+hr {
+  width: 100%;
+  color: var(--text);
+  opacity: 35%;
+}
+
 /* Page elements */
 
 main {
-  margin: 0 2rem 2rem 2rem;
-  max-width: 60ch;
+  padding: 2rem;
+  max-width: calc(60ch + 4rem);
+  width: 100%;
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -113,6 +120,7 @@ nav ul {
 
 nav a {
   text-wrap: nowrap;
+  margin: 0 0.5rem;
 }
 
 footer {
@@ -154,4 +162,8 @@ form input:focus, textarea:focus{
 
 form input:hover, textarea:hover {
   opacity: 80%;
+}
+
+.blog, .resume, .project {
+  width: 100%;
 }
