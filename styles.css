@@ -9,6 +9,14 @@
 	--blue: #3fc6de;
 }
 
+@font-face {
+  font-family: "JBM";
+  src:
+    local("JetBrains Mono"),
+    url("fonts/webfonts/JetBrainsMono-Regular.woff2") format("woff2"),
+    url("fonts/variable/JetBrainsMono[wght].ttf") format("ttf");
+}
+
 * {
   box-sizing: inherit;
 }
@@ -16,8 +24,10 @@
 html {
   height: 100%;
   box-sizing: border-box;
-  font-family: "JetBrains Mono", liberation mono, monospace;
+  font-family: "JBM", "JetBrains Mono", liberation mono, monospace;
   line-height: calc(1em + 0.5rem);
+  background-color: var(--bg-mid);
+  overscroll-behavior-y: none;
 }
 
 body {
