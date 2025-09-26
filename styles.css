@@ -1,3 +1,5 @@
+/* Full page defaults */
+
 :root {
 	--text: #d9e0ee;
 	--bg: #303241;
@@ -7,69 +9,43 @@
 	--blue: #3fc6de;
 }
 
+* {
+  box-sizing: inherit;
+}
+
 html {
   height: 100%;
+  box-sizing: border-box;
+  font-family: "JetBrains Mono", liberation mono, monospace;
+  line-height: calc(1em + 0.5rem);
 }
 
 body {
   background-color: var(--bg);
   color: var(--text);
-  font-family: "JetBrains Mono", liberation mono, monospace;
-  line-height: calc(1em + 0.5rem);
   min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   padding: 0;
   margin: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
 }
 
-main {
-  padding: 0 2rem 4rem 2rem;
-  max-width: 75ch;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
+/* Default element styles */
+
+h1 {
+  font-size: 1.5rem;
 }
 
-/* CSS for navigation bar */
-
-.navbar {
-  position: -webkit-sticky;
-  position: sticky;
-  top: 0;
-  width: 100%;
-  height: 2.5rem;
-  z-index: 10;
-
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  text-align: center;
-
-  background-color: var(--bg-mid);
-  color: var(--text);
-  font-size: 0.9rem;
-}
-
-img {
-  max-width: calc(100% - 2rem);
-  width: 100%;
-  padding: 0 1rem;
-}
-
-.nav-list {
-  display: flex;
-  flex-direction: row;
-  position: relative;
-  list-style: none;
+h2 {
+  font-size: 1.25rem;
 }
 
 a {
   color: var(--blue);
-  margin: 0 12px;
+  margin: 0 0.5rem;
   text-decoration: none;
+  font-weight: bold;
 }
 
 a:hover {
@@ -77,21 +53,52 @@ a:hover {
   text-decoration: underline
 }
 
-/* CSS for page footer */
+img {
+  width: 100%;
+  padding: 0 1rem;
+}
 
-.footer {
+/* Page elements */
+
+main {
+  padding: 0 2rem 4rem 2rem;
+  max-width: 65ch;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+nav, footer {
+  background-color: var(--bg-mid);
+  height: 2.5rem;
+  width: 100%;
+  font-size: 0.9rem;
+}
+
+nav {
+  position: -webkit-sticky;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  text-align: center;
+  padding: 0 0.5rem;
+  color: var(--text);
+}
+
+nav ul {
+  display: flex;
+  flex-direction: row;
+  list-style: none;
+}
+
+footer {
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: var(--bg-mid);
   color: var(--green);
-  position: sticky;
-  position: -webkit-sticky;
-  bottom: 0;
-  width: 100%;
-  height: 2.5rem;
-}
-
-.page-title {
-  font-size: 1.25rem;
 }
