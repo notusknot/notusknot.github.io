@@ -15,7 +15,6 @@
 
 html {
   height: 100%;
-  max-width: 100vw;
   overflow-x: hidden;
   box-sizing: border-box;
   font-family: "JetBrains Mono", liberation mono, monospace;
@@ -64,8 +63,8 @@ img {
 /* Page elements */
 
 main {
-  padding: 0 2rem;
-  max-width: 65ch;
+  margin: 0 2rem 2rem 2rem;
+  max-width: 60ch;
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -78,7 +77,6 @@ nav, footer {
   width: 100%;
   font-size: 0.9rem;
   padding: 0 0.5rem;
-  overflow: auto;
 }
 
 nav {
@@ -88,16 +86,25 @@ nav {
   z-index: 10;
 
   display: flex;
+  flex-direction: row;
   justify-content: space-between;
   align-items: center;
   text-align: center;
   color: var(--text);
+  overflow-x: auto;
+  overflow-y: hidden;
 }
 
 nav ul {
   display: flex;
-  flex-direction: row;
   list-style: none;
+  margin-left: 0px;
+  padding: none !important;
+  margin: none !important;
+}
+
+nav a {
+  text-wrap: nowrap;
 }
 
 footer {
