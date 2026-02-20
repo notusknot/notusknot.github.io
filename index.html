@@ -1,0 +1,71 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Rhythm ⇄ Pitch MVP</title>
+    <style>
+      body { font-family: system-ui, sans-serif; padding: 16px; max-width: 800px; }
+      .row { margin: 12px 0; display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+      input[type="text"] { width: 240px; padding: 6px 8px; }
+      input[type="range"] { width: 320px; }
+      label { display: inline-flex; gap: 6px; align-items: center; }
+      button { padding: 8px 12px; }
+      small { color: #444; }
+      p { white-space: pre-wrap; }
+      .mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+    </style>
+  </head>
+  <body>
+    <h1>Polyrhythm chords (Leibnotez MVP)</h1>
+
+    <canvas id="cycleCanvas" width="800" height="200"></canvas>
+
+    <div class="row">
+      <button id="startBtn">Start audio</button>
+      <button id="stopBtn" disabled>Stop</button>
+      <small id="status">stopped</small>
+    </div>
+
+    <div class="row">
+      <label>Ratios <input id="ratios" type="text" value="2:3:4:5:6" class="mono" /></label>
+      <button id="applyBtn">Apply</button>
+    </div>
+
+    <div class="row">
+      <label>
+        Time scale (cycle duration T)
+        <input id="tSlider" type="range" min="0" max="1" step="0.001" value="0.4" />
+      </label>
+      <span class="mono" id="tLabel"></span>
+      <small>(log scale: rhythm → pitch)</small>
+    </div>
+
+    <div class="row">
+      <label><input type="radio" name="mode" value="click" checked /> click</label>
+      <label><input type="radio" name="mode" value="sine" /> sine</label>
+      <label>Root Hz <input id="rootHz" type="number" min="20" max="1000" value="110" /></label>
+    </div>
+
+    <p>
+      Tip: Drag the slider left/right. Large T = slow taps. Small T = fast, becomes a chord.
+      Cool chords:
+      Major - 4:5:6
+      Minor - 10:12:15
+      Alternatively, 6:7:9 or 16:19:24
+      Diminished - 5:6:7
+      Augmented - 12:15:19 (8:10:13 is close as well)
+      Sus4 - 6:8:9
+      Sus2 - 8:9:12
+      Neutral - 18:22:27
+      Maj9 - 8:10:12:15:18
+      Dom9 - 4:5:6:7:9
+      Min7 - 10:12:15:18
+      7sus4 - 18:24:27:32
+      Half dim7 - 5:6:7:9
+      Dim7 - 10:12:14:17
+    </p>
+
+    <script src="main.js"></script>
+  </body>
+</html>
