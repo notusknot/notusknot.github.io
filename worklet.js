@@ -24,7 +24,9 @@ class RatioPolyrhythmProcessor extends AudioWorkletProcessor {
       if (!msg || msg.type !== "params") return;
 
       const newRatios =
-        Array.isArray(msg.ratios) && msg.ratios.length ? msg.ratios : this.ratios;
+        Array.isArray(msg.ratios) && msg.ratios.length
+          ? [...msg.ratios].sort((a, b) => a - b)
+          : this.ratios;
 
       const ratiosChanged =
         newRatios.length !== this.ratios.length ||
@@ -49,10 +51,16 @@ class RatioPolyrhythmProcessor extends AudioWorkletProcessor {
 
   _resetSchedules() {
     const now = currentTime;
-    this.nextHit = this.ratios.map(() => now);
+    this.hitPhase = this.ratios.map(() => 0);
     this.phase = this.ratios.map(() => 0);
     this.y1 = this.ratios.map(() => 0);
     this.y2 = this.ratios.map(() => 0);
+  }
+
+
+  _smoothstep(edge0, edge1, x) {
+    const t = Math.max(0, Math.min(1, (x - edge0) / (edge1 - edge0)));
+    return t * t * (3 - 2 * t);
   }
 
   process(inputs, outputs) {
@@ -91,7 +99,6 @@ class RatioPolyrhythmProcessor extends AudioWorkletProcessor {
     // CLICK/RESONATOR MODE
     const now0 = currentTime;
 
-    const damp = 0.999;     // ring length
     const hitAmp = 0.15;    // base excitation
     const outGain = 0.25;   // overall trim
 
@@ -99,7 +106,7 @@ class RatioPolyrhythmProcessor extends AudioWorkletProcessor {
     const fRef = 80;
     const fMin = 1;
     const maxBoost = 3.0;
-    const minBoost = 0.15;
+    const minBoost = 0.05;
 
     // optional dry click (keeps slow taps audible)
     const dryAmp = 0.03;
@@ -109,6 +116,13 @@ class RatioPolyrhythmProcessor extends AudioWorkletProcessor {
       this.TSmooth = alpha * this.TSmooth + (1 - alpha) * this.TTarget;
       const TS = this.TSmooth;
 
+      // Estimate max frequency among ratios for this sample
+      const rMax = this.ratios[this.ratios.length - 1] || 1; // assumes ratios sorted; if not, compute max once on update
+      const fMax = Math.max(1, Math.min(4000, rMax / TS));
+
+      // Trim starts around 200 Hz and reaches stronger cut by 2000 Hz
+      const hiTrim = 1 / Math.sqrt(1 + (fMax / 400)); // tweak 400 -> lower means more cut sooner`
+
       const t = now0 + i * dt;
       let s = 0;
 
@@ -117,18 +131,25 @@ class RatioPolyrhythmProcessor extends AudioWorkletProcessor {
 
         // Hit scheduling
         const period = TS / r;
-        let hit = 0;
 
-        while (t >= this.nextHit[j]) {
-          hit += 1;
-          this.nextHit[j] += period;
-          if (period < 1e-6) break;
-          if (hit > 4) break; // safety cap
+        // phase-accumulator hit generation (sample-accurate, no drift)
+        let hit = 0;
+        const inc = (r / TS) * dt;     // cycles per sample
+        this.hitPhase[j] += inc;
+
+        if (this.hitPhase[j] >= 1) {
+          // If inc is big, you might cross more than once in a sample:
+          hit = Math.floor(this.hitPhase[j]);
+          this.hitPhase[j] -= hit;
+          if (hit > 4) hit = 4; // keep your safety cap
         }
 
         // Frequency: repetition rate -> pitch
         let f = r / TS; // Hz
         f = Math.max(1, Math.min(4000, f)); // musical-ish clamp
+
+        const qMix = this._smoothstep(25, 120, f);
+        const damp = 0.995 + qMix * (0.99995 - 0.995);
 
         const w = 2 * Math.PI * f / sr;
         const a = 2 * Math.cos(w) * damp;
@@ -152,6 +173,7 @@ class RatioPolyrhythmProcessor extends AudioWorkletProcessor {
 
       s = (s / Math.max(1, this.ratios.length)) * outGain;
       s = Math.tanh(s); // safety
+      s = s * hiTrim;
 
       ch0[i] = s;
       if (ch1) ch1[i] = s;

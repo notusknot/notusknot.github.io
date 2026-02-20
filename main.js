@@ -16,6 +16,10 @@ const rootHzEl = document.getElementById("rootHz");
 const canvas = document.getElementById("cycleCanvas");
 const ctx2d = canvas.getContext("2d");
 
+
+const lockEl = document.getElementById("lockT");
+lockEl.addEventListener("change", sendParams);
+
 function drawCycle(ratios, T) {
   const w = canvas.width;
   const h = canvas.height;
@@ -62,7 +66,7 @@ function updateTLabel(T) {
 // Big T = rhythm, small T = pitch.
 // You can tweak these bounds freely.
 function sliderToT(u) {
-  const T_max = 1.0;      // 2 seconds per cycle
+  const T_max = 2.0;      // 2 seconds per cycle
   const T_min = 0.01;    // 1 ms per cycle (very pitchy)
   const logMin = Math.log(T_min);
   const logMax = Math.log(T_max);
@@ -85,8 +89,18 @@ function sendParams() {
   const g = gcdAll(ints) || 1;
   ratios = ints.map(x => x / g);
 
-  const T = sliderToT(Number(tSlider.value));
+  //const T = sliderToT(Number(tSlider.value));
+  //const rootHz = Number(rootHzEl.value) || 110;
+
+
   const rootHz = Number(rootHzEl.value) || 110;
+  const rRoot = Math.min(...ratios);
+
+  let T = sliderToT(Number(tSlider.value));
+
+  if (lockEl.checked) {
+    T = rRoot / rootHz;
+  }
 
   updateTLabel(T);
 
