@@ -5,7 +5,7 @@ class RatioPolyrhythmProcessor extends AudioWorkletProcessor {
     // Params (defaults)
     this.ratios = [2, 3, 4, 5, 6];
     this.mode = "click"; // "click" or "sine"
-    this.rootHz = 110;
+    this.rootHz = 440;
 
     // T smoothing
     this.TTarget = 0.4;
@@ -108,6 +108,8 @@ class RatioPolyrhythmProcessor extends AudioWorkletProcessor {
     const maxBoost = 3.0;
     const minBoost = 0.05;
 
+    const fLimit = 4000; // Hz, pick what you like
+
     // optional dry click (keeps slow taps audible)
     const dryAmp = 0.03;
 
@@ -116,8 +118,12 @@ class RatioPolyrhythmProcessor extends AudioWorkletProcessor {
       this.TSmooth = alpha * this.TSmooth + (1 - alpha) * this.TTarget;
       const TS = this.TSmooth;
 
+      const rMax = this.ratios[this.ratios.length - 1] || 1;
+      const fMaxUnclamped = rMax / TS;
+      const scale = fMaxUnclamped > fLimit ? (fLimit / fMaxUnclamped) : 1.0;
+
       // Estimate max frequency among ratios for this sample
-      const rMax = this.ratios[this.ratios.length - 1] || 1; // assumes ratios sorted; if not, compute max once on update
+      //const rMax = this.ratios[this.ratios.length - 1] || 1; // assumes ratios sorted; if not, compute max once on update
       const fMax = Math.max(1, Math.min(4000, rMax / TS));
 
       // Trim starts around 200 Hz and reaches stronger cut by 2000 Hz
@@ -145,8 +151,8 @@ class RatioPolyrhythmProcessor extends AudioWorkletProcessor {
         }
 
         // Frequency: repetition rate -> pitch
-        let f = r / TS; // Hz
-        f = Math.max(1, Math.min(4000, f)); // musical-ish clamp
+        let f = (r / TS) * scale;
+        f = Math.max(1, f); // keep a floor if you want
 
         const qMix = this._smoothstep(25, 120, f);
         const damp = 0.995 + qMix * (0.99995 - 0.995);

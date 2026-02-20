@@ -17,9 +17,6 @@ const canvas = document.getElementById("cycleCanvas");
 const ctx2d = canvas.getContext("2d");
 
 
-const lockEl = document.getElementById("lockT");
-lockEl.addEventListener("change", sendParams);
-
 function drawCycle(ratios, T) {
   const w = canvas.width;
   const h = canvas.height;
@@ -41,6 +38,13 @@ function drawCycle(ratios, T) {
   });
 }
 
+function computeTBounds(ratios, rootHz) {
+  const rRoot = Math.min(...ratios);
+  const Tmin = rRoot / Math.max(1, rootHz); // seconds
+  const Tmax = 2.0;                         // keep your rhythm range (tweak as you like)
+  return { Tmin, Tmax };
+}
+
 function parseRatios(str) {
   // Accept "2:3:4:5:6" or "2 3 4 5 6" or "2,3,4"
   const parts = str.split(/[: ,]+/).map(s => s.trim()).filter(Boolean);
@@ -60,17 +64,17 @@ function gcdAll(arr) {
 
 function updateTLabel(T) {
   tLabel.textContent = `T = ${T.toFixed(6)} s`;
+  
 }
 
 // Map slider [0..1] to T in seconds (log scale).
 // Big T = rhythm, small T = pitch.
 // You can tweak these bounds freely.
-function sliderToT(u) {
-  const T_max = 2.0;      // 2 seconds per cycle
-  const T_min = 0.01;    // 1 ms per cycle (very pitchy)
-  const logMin = Math.log(T_min);
-  const logMax = Math.log(T_max);
-  const logT = logMax + (logMin - logMax) * u; // u=0 -> max, u=1 -> min
+function sliderToT(u, Tmin, Tmax) {
+  // u in [0..1], map to T in [Tmax..Tmin] on a log scale
+  const logMin = Math.log(Tmin);
+  const logMax = Math.log(Tmax);
+  const logT = logMax + (logMin - logMax) * u; // u=0 -> Tmax, u=1 -> Tmin
   return Math.exp(logT);
 }
 
@@ -93,14 +97,13 @@ function sendParams() {
   //const rootHz = Number(rootHzEl.value) || 110;
 
 
-  const rootHz = Number(rootHzEl.value) || 110;
   const rRoot = Math.min(...ratios);
 
-  let T = sliderToT(Number(tSlider.value));
+  //let T = sliderToT(Number(tSlider.value));
+  const rootHz = Number(rootHzEl.value) || 440;
+  const { Tmin, Tmax } = computeTBounds(ratios, rootHz);
 
-  if (lockEl.checked) {
-    T = rRoot / rootHz;
-  }
+  const T = sliderToT(Number(tSlider.value), Tmin, Tmax);
 
   updateTLabel(T);
 
